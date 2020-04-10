@@ -40,5 +40,8 @@ exports.findBy = async function (search) {
 
 };
 
+exports.findById = async function (id) {
+    return await Student.find({_id: id});
+};
 
 

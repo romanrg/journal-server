@@ -24,3 +24,6 @@ exports.deleteSubject = async function(id) {
 
 };
 
+exports.findById = async function (id) {
+    return await Subject.find({_id: id});
+};

@@ -5,20 +5,19 @@ const {
     getAll,
     createMark,
     updateMark,
-    deleteMark
 } = require("../services/marks");
 
 const api = Router();
 
-api.get("/", asyncHandler(async (req, res) => {
+const returnMarks = asyncHandler(async (req, res) => {
 
     const marks = await getAll();
 
     res.send(marks);
 
-}));
+});
 
-api.post("/", asyncHandler(async (req, res) => {
+const postMark = asyncHandler(async (req, res) => {
 
 
     if (!req.body) {
@@ -32,30 +31,21 @@ api.post("/", asyncHandler(async (req, res) => {
 
     res.send(createdMark);
 
-}));
+});
 
-
-api.patch("/:id", asyncHandler(async (req, res) => {
+const patchMark = asyncHandler(async (req, res) => {
 
     const patchedMark = await updateMark(req.body);
 
     res.send(patchedMark);
 
-}));
+});
 
+api.route("/")
+    .get(returnMarks)
+    .post(postMark);
 
-api.delete('/:id', asyncHandler(async (req, res) => {
-
-
-
-    const { id } = req.params;
-
-    console.log(id);
-
-    //await deleteMark(id);
-
-    res.send("");
-
-}));
+api.route("/:id")
+    .patch(patchMark);
 
 module.exports = api;

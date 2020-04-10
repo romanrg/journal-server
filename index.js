@@ -1,38 +1,22 @@
 require("dotenv").config();
-const mongoose = require("mongoose");
-const express = require("express");
-const { Router } = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-
-const app = express();
 const PORT = process.env.PORT | 8080;
+const URI = process.env.URI;
 
-
-app.use(bodyParser.json({type: "application/json"}));
-app.use(cors());
-
-
+const express = require("express");
+const app = express();
+const cors = require("cors");
 const api = require("./routes/api");
 
-const MongoClient = require('mongodb').MongoClient;
-const uri = process.env.URI;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true});
-client.connect((err, db) => db.close());
+const { establishConnectionWithDB } = require("./MongoClient");
 
+establishConnectionWithDB(URI);
 
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.connection.on("connected", () => console.log("mongoose connected"));
+app.use(express.json());
 
+app.use(cors());
 
 app.use("/api", api);
 
 app.all("*", (req, res) => res.sendStatus(404));
 
-
-
-
-
-
-
-app.listen(PORT, () => console.log(`listen on ${PORT} port`));
+app.listen(PORT);

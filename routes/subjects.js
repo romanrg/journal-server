@@ -5,21 +5,22 @@ const {
     getAll,
     createSubject,
     updateSubject,
-    deleteSubject
+    deleteSubject,
+    findById
 } = require("../services/subjects");
 
 const api = Router();
 
-api.get("/", asyncHandler(async (req, res) => {
+const get = asyncHandler(async (req, res) => {
 
     const subjects = await getAll();
 
     res.send(subjects);
 
 
-}));
+});
 
-api.post("/", asyncHandler(async (req, res) => {
+const post = asyncHandler(async (req, res) => {
 
 
     if (!req.body) {
@@ -33,29 +34,40 @@ api.post("/", asyncHandler(async (req, res) => {
 
     res.send(createdSubject);
 
-}));
+});
 
-
-api.patch("/:id", asyncHandler(async (req, res) => {
+const patch = asyncHandler(async (req, res) => {
 
     const patchedSubject = await updateSubject(req.body);
 
     res.send(patchedSubject);
 
-}));
+});
 
+const remove = asyncHandler(async (req, res) => {
 
-api.delete('/:id', asyncHandler(async (req, res) => {
-
-
-
-    const { id } = req.params;
+    const id  = req.subject[0]._id;
 
     await deleteSubject(id);
 
     res.send("");
 
-}));
+});
+
+const handleIdParam = asyncHandler(async (req, res, next, id) => {
+    req.subject = await findById(id);
+    next();
+});
+
+api.route("/")
+    .get(get)
+    .post(post);
+
+
+api.param("id", handleIdParam);
+api.route("/:id")
+    .patch(patch)
+    .delete(remove);
 
 
 module.exports = api;
