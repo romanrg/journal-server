@@ -10,24 +10,11 @@ exports.createMark = async function (mark = {}) {
 
     if (Array.isArray(mark)) {
         const handler = mark.reduce((acc, mark) => {
-            mark._id ? acc.update.push(mark) : acc.create.push(mark);
+            mark._id ? exports.updateMark(mark) : acc.create.push(mark);
             return acc;
-        }, {create: [], update: []});
+        }, {create: []});
 
-        // create new
-        const created =  await Mark.insertMany(handler.create);
-
-        // update old
-        handler.update.reduce(
-            (acc, current) => {
-                const updated = exports.updateMark(current);
-                acc = [...acc, updated];
-                return acc;
-            }, []
-        );
-
-        return created;
-
+        return await Mark.insertMany(handler.create);
 
     } else {
         return (new Mark(mark)).save();
